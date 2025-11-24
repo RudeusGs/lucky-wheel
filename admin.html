@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý phần thưởng - Lucky Wheel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        /* Header Section */
+        .header-section {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
+            border-bottom: 1px solid rgba(71, 85, 105, 0.2);
+            padding: 32px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header-left h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-left p {
+            font-size: 14px;
+            color: #94a3b8;
+            font-weight: 400;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: rgba(100, 116, 139, 0.1);
+            border: 1px solid rgba(100, 116, 139, 0.3);
+            color: #93c5fd;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-link:hover {
+            background: rgba(100, 116, 139, 0.2);
+            border-color: rgba(100, 116, 139, 0.5);
+        }
+
+        .btn-logout {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border: none;
+            color: white;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Status Message */
+        .status-bar {
+            background: rgba(30, 41, 59, 0.4);
+            border-bottom: 1px solid rgba(71, 85, 105, 0.2);
+            padding: 16px 40px;
+            font-size: 13px;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .content {
+            padding: 40px;
+        }
+
+        /* Table Section */
+        .table-wrapper {
+            overflow-x: auto;
+            margin-bottom: 32px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(30, 41, 59, 0.6);
+            border-bottom: 2px solid rgba(71, 85, 105, 0.3);
+        }
+
+        th {
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tr {
+            border-bottom: 1px solid rgba(71, 85, 105, 0.15);
+            transition: background 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        td {
+            padding: 16px;
+            font-size: 13px;
+        }
+
+        /* Inputs */
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 8px 12px;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            color: #e2e8f0;
+            border-radius: 6px;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            background: rgba(30, 41, 59, 0.8);
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #60a5fa;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: #ecfdf5;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: #fee2e2;
+        }
+
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Add Prize Section */
+        .add-section {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(71, 85, 105, 0.2);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .add-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #e2e8f0;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 16px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 180px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            color: white;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(96, 165, 250, 0.4);
+        }
+
+        .note {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid #3b82f6;
+            padding: 12px 16px;
+            margin-top: 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #93c5fd;
+            line-height: 1.6;
+        }
+
+        .note code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            color: #fbbf24;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .id-display {
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 11px;
+            color: #94a3b8;
+            max-width: 150px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        @media (max-width: 768px) {
+            .header-section {
+                padding: 20px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-left h1 {
+                font-size: 24px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .form-group {
+                width: 100%;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            td, th {
+                padding: 12px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header-section">
+        <div class="header-left">
+            <h1>🎡 Quản lý Vòng Quay</h1>
+            <p>Quản lý phần thưởng cho vòng quay may mắn</p>
+        </div>
+        <div class="header-right">
+            <a href="/" class="btn-link">← Quay ngay</a>
+            <button class="btn-logout" onclick="logout()">Đăng xuất</button>
+        </div>
+    </div>
+
+    <div class="status-bar" id="status">Đang tải danh sách phần thưởng...</div>
+
+    <div class="content">
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>Tên phần thưởng</th>
+                    <th style="width: 120px;">Trọng số</th>
+                    <th style="width: 100px;">Hoạt động</th>
+                    <th style="width: 180px;">ID</th>
+                    <th style="width: 130px;">Thao tác</th>
+                </tr>
+                </thead>
+                <tbody id="prizeBody">
+                <!-- Sẽ được fill bởi JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="add-section">
+            <h3>Thêm phần thưởng mới</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Tên phần thưởng</label>
+                    <input type="text" id="newName" placeholder="VD: Chuột gaming, 50K...">
+                </div>
+                <div class="form-group">
+                    <label>Trọng số (weight)</label>
+                    <input type="number" id="newWeight" value="1" min="0" step="1">
+                </div>
+                <div class="form-group" style="align-items: center; justify-content: flex-start;">
+                    <label>Hoạt động</label>
+                    <input type="checkbox" id="newActive" checked>
+                </div>
+                <button class="btn btn-add" onclick="createPrize()">+ Thêm</button>
+            </div>
+        </div>
+
+        <div class="note">
+            💡 <strong>Mẹo:</strong> Trọng số càng cao, phần thưởng càng dễ trúng. Ví dụ: "Không Có" weight 50, "1M" weight 1.
+        </div>
+    </div>
+</div>
+
+<script>
+    const statusEl = document.getElementById('status');
+    const prizeBody = document.getElementById('prizeBody');
+
+    async function logout() {
+        try {
+            await fetch('/api/admin/logout', { method: 'POST' });
+        } catch (e) {
+            console.error(e);
+        }
+        window.location.href = '/admin/login';
+    }
+
+    async function loadPrizes() {
+        statusEl.textContent = 'Đang tải danh sách phần thưởng...';
+        try {
+            const res = await fetch('/api/prizes');
+            const data = await res.json();
+            const prizes = data.prizes || [];
+            renderPrizeRows(prizes);
+            if (!prizes.length) {
+                statusEl.textContent = 'Chưa có phần thưởng nào. Hãy thêm mới bên dưới.';
+            } else {
+                statusEl.textContent = `Hiện có ${prizes.length} phần thưởng`;
+            }
+        } catch (err) {
+            console.error(err);
+            statusEl.textContent = 'Lỗi: Không tải được danh sách (có thể chưa đăng nhập).';
+        }
+    }
+
+    function renderPrizeRows(prizes) {
+        prizeBody.innerHTML = '';
+        prizes.forEach(p => {
+            const tr = document.createElement('tr');
+            tr.dataset.id = p.id;
+
+            tr.innerHTML = `
+                <td>
+                    <input type="text" value="${p.name}" class="input-name">
+                </td>
+                <td>
+                    <input type="number" value="${p.weight}" min="0" step="1" class="input-weight">
+                </td>
+                <td style="text-align:center;">
+                    <input type="checkbox" class="input-active" ${p.active ? 'checked' : ''}>
+                </td>
+                <td><span class="id-display">${p.id}</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn btn-save" onclick="savePrize(this)">Lưu</button>
+                        <button class="btn btn-delete" onclick="deletePrize(this)">Xoá</button>
+                    </div>
+                </td>
+            `;
+            prizeBody.appendChild(tr);
+        });
+    }
+
+    async function createPrize() {
+        const name = document.getElementById('newName').value.trim();
+        const weight = parseInt(document.getElementById('newWeight').value || '0', 10);
+        const active = document.getElementById('newActive').checked;
+
+        if (!name) {
+            alert('Tên phần thưởng không được để trống');
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/admin/prizes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, weight, active })
+            });
+            const data = await res.json();
+            if (!res.ok || !data.success) {
+                alert('Lỗi: ' + (data.error || 'Không thể tạo phần thưởng (có thể chưa đăng nhập).'));
+                if (res.status === 401 || res.status === 403) {
+                    window.location.href = '/admin/login';
+                }
+                return;
+            }
+            document.getElementById('newName').value = '';
+            document.getElementById('newWeight').value = '1';
+            document.getElementById('newActive').checked = true;
+            loadPrizes();
+        } catch (err) {
+            console.error(err);
+            alert('Có lỗi xảy ra khi tạo phần thưởng');
+        }
+    }
+
+    async function savePrize(btn) {
+        const tr = btn.closest('tr');
+        const id = tr.dataset.id;
+        const name = tr.querySelector('.input-name').value.trim();
+        const weight = parseInt(tr.querySelector('.input-weight').value || '0', 10);
+        const active = tr.querySelector('.input-active').checked;
+
+        if (!name) {
+            alert('Tên phần thưởng không được để trống');
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/admin/prizes/' + encodeURIComponent(id), {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, weight, active })
+            });
+            const data = await res.json();
+            if (!res.ok || !data.success) {
+                alert('Lỗi: ' + (data.error || 'Không thể cập nhật (có thể chưa đăng nhập).'));
+                if (res.status === 401 || res.status === 403) {
+                    window.location.href = '/admin/login';
+                }
+                return;
+            }
+            alert('Đã lưu phần thưởng');
+            loadPrizes();
+        } catch (err) {
+            console.error(err);
+            alert('Có lỗi xảy ra khi lưu phần thưởng');
+        }
+    }
+
+    async function deletePrize(btn) {
+        const tr = btn.closest('tr');
+        const id = tr.dataset.id;
+
+        if (!confirm('Bạn có chắc muốn xoá phần thưởng này?')) return;
+
+        try {
+            const res = await fetch('/api/admin/prizes/' + encodeURIComponent(id), {
+                method: 'DELETE'
+            });
+            const data = await res.json();
+            if (!res.ok || !data.success) {
+                alert('Lỗi: ' + (data.error || 'Không thể xoá (có thể chưa đăng nhập).'));
+                if (res.status === 401 || res.status === 403) {
+                    window.location.href = '/admin/login';
+                }
+                return;
+            }
+            tr.remove();
+            loadPrizes();
+        } catch (err) {
+            console.error(err);
+            alert('Có lỗi xảy ra khi xoá phần thưởng');
+        }
+    }
+
+    loadPrizes();
+</script>
+</body>
+</html>
