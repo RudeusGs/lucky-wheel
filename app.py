@@ -1,6 +1,6 @@
 import os
 import random
-from datetime import date
+from datetime import date, timedelta
 
 from flask import (
     Flask,
@@ -157,7 +157,12 @@ def weighted_random_choice(prizes):
 app = Flask(__name__, static_folder=".", static_url_path="")
 app.secret_key = SECRET_KEY
 CORS(app)
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=1)
+app.config["SESSION_COOKIE_NAME"] = "luckywheel_session"
 
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
 
 # =========================
 # ADMIN HELPER
